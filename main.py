@@ -50,6 +50,8 @@ def move_snake(snake_list,dx,dy):
                 dx = 0                
                 dy = snake['height']        
         if event.type == pygame.QUIT: sys.exit()
+    
+
     xf = snake_list[-1][0] + dx
     yf = snake_list[-1][1] + dy
 
@@ -59,11 +61,11 @@ def move_snake(snake_list,dx,dy):
     return dx,dy
 
 def selectFoodPosition():
-    food_x = random.randrange(0,600)
-    food_y = random.randrange(0,600)
-    return food_x,food_y
+    x_food = round(random.randrange(0,600 - snake['height']) /20) * 20
+    y_food = round(random.randrange(0,600 - snake['height']) /20) * 20
+    return x_food,y_food
 
-def isEated(dx,dy,snake_list):
+def isEated(dx,dy,snake_list,x_food,y_food):
     head = snake_list[-1]
 
     xf = head[0] + dx
@@ -71,14 +73,20 @@ def isEated(dx,dy,snake_list):
  
     if head[0] == x_food and head[1] == y_food:
         snake_list.append([xf,yf])
-        #print('Comeu')
-        
+        x_food,y_food = selectFoodPosition() 
         
     return x_food,y_food,snake_list
 
 def draw_food(x_food,y_food):
     pygame.draw.rect(display,red,[x_food,y_food,snake['height'],snake['height']])
 
+def exist(snake_list):
+    head = snake_list[-1]
+    x_head = head[0]
+    y_head = head[1]
+
+    if x_head not in range(600) or y_head not in range(600):
+        raise Exception
 
 #Main Game Loop
 while True:
@@ -89,5 +97,6 @@ while True:
     dx,dy = move_snake(position_list,dx,dy)
 
     #print(position_list)
-    x_food,y_food,position_list = isEated(dx,dy,position_list)
-    clock.tick(1)
+    x_food,y_food,position_list = isEated(dx,dy,position_list,x_food,y_food)
+    exist(position_list)
+    clock.tick(10)
